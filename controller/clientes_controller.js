@@ -47,7 +47,7 @@ exports.inserir = (req, res) => {
     }
 
 }
-//Ainda ta com erro
+//Funcionando
 exports.atualizar = (req, res) => {
 
     const id = req.params.id;
@@ -76,7 +76,7 @@ exports.atualizar = (req, res) => {
     }
 
 }
-// ainda ta com erro
+// Funcionando
 exports.deletar = (req, res) => {
 
     const id = req.params.id;
@@ -89,7 +89,7 @@ exports.deletar = (req, res) => {
     )
 
     if(indiceClientes >= 0){
-        const clienteEncontrado = listaClientes.slice(indiceClientes, 1)[0];
+        const clientesDeletado = listaClientes.splice(indiceClientes, 1)[0];
         return res.json(clientesDeletado);
     }
 
