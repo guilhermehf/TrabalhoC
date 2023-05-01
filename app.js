@@ -4,9 +4,9 @@ const app = express();
 const PORTA = 3000;
 
 let listaClientes = [
-    {id:1, nome: "Felipe"},
-    {id:2, nome: "Diego"},
-    {id:3, nome: "Pedro"}
+    {id:1, nome: "Felipe", email: "felipe@gmail.com"},
+    {id:2, nome: "Diego", email: "diego@gmail.com"},
+    {id:3, nome: "Pedro", email: "pedro@gmail.com"}
 ]
 
 let idAutoIncrement = 4;
@@ -22,8 +22,8 @@ app.get("/api/clientes", (req, res) => {
 app.get("/api/clientes/:id",(req, res) => {
     const id = req.params.id;
     
-    const clienteEncontrado = listaClientes.find((cliente) => {
-        return (clientes.id == id)
+    const clienteEncontrado = listaClientes.find((clientes) => {
+        return (clientes.id == id);
 
     })
 
@@ -42,7 +42,7 @@ app.post("/api/clientes", (req, res) => {
     const novoCliente = req.body;
     //validar os dados
 
-    if(novoCliente && novoCliente.nome){
+    if(novoCliente && novoCliente.nome && novoCliente.email){
         //Se Ok, cadastra o cliente e retorno 201
         novoCliente.id = idAutoIncrement++;
         listaClientes.push(novoCliente);
@@ -53,15 +53,18 @@ app.post("/api/clientes", (req, res) => {
         return res.status(200).json({Erro: "Nome sao obrigatorios"});
     }
 })
-
+//Ainda com erro
 app.put("api/clientes/:id", (req, res) => {
+
     const id = req.params.id;
     
 
     const clienteAlterar = req.body;
 
-    if(!clienteAlterar || !clienteAlterar.nome){
-        return res.status(400).json({Erro: "Nome sao obrigatorios"});
+    if(!clienteAlterar || !clienteAlterar.nome || !clienteAlterar.email){
+        return res.status(400).json({
+            Erro: "Nome sao obrigatorios"
+        });
     }
 
     const clienteEncontrado = listaClientes.find((clientes) => {
@@ -70,6 +73,7 @@ app.put("api/clientes/:id", (req, res) => {
 
     if(clienteEncontrado){
         clienteEncontrado.nome = clienteAlterar.nome;
+        clienteEncontrado.email = clienteAlterar.email;
         return res.json(clienteEncontrado);
     }
 
@@ -77,7 +81,7 @@ app.put("api/clientes/:id", (req, res) => {
         return res.status(404).json({ Erro: "Cliente nao encontrado"});
     }
 })
-
+//Ainda com erro
 app.delete("api/clientes/:id", (req, res) => {
     const id = req.params.id;
     
@@ -99,5 +103,5 @@ app.delete("api/clientes/:id", (req, res) => {
 })
 
 app.listen(PORTA, () => {
-    console.log(`Servidor Iniciando na Porta ${PORTA}`);
+    console.log(`Servidor iniciado na porta ${PORTA}`);
 })
