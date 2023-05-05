@@ -6,12 +6,12 @@ let listaLogin = [
 
 let idAutoIncrement = 4;
 
-
-app.get("/api/login", (req, res) => {
+exports.listar = (req, res) => {
     res.json(listaLogin);
-})
+}
 
-app.get("/api/login/:id", (req, res) => {
+exports.buscarPorId = (req, res) => {
+
     const id = req.params.id;
 
     const loginEncontrado = listaLogin.find((login) => {
@@ -24,31 +24,33 @@ app.get("/api/login/:id", (req, res) => {
     else {
         return res.status(404).json({ Erro: "Login nao encontrado"});
     }
-})
 
-app.post("/api/login", (req, res) => {
-    
+}
 
-    //receber o login
-    const novoLogin = req.body;
-    //validar os dados
+exports.inserir = (req, res) => {
 
-    if(novoLogin && novoLogin.login && novoLogin.senha){
-        //se OK, cadastro os logins e retorna 201
-        novoLogin.id = idAutoIncrement++;
-        listaLogin.push(novoLogin);
-        return res.status(201).json(novoLogin);
-    }
-    else{
-        //senao retorna 400
-        return res.status(400).json({
-            Erro: "Nome e/ ou senha sao obrigatorios"
+     //receber o login
+     const novoLogin = req.body;
+     //validar os dados
+ 
+     if(novoLogin && novoLogin.login && novoLogin.senha){
+         //se OK, cadastro os logins e retorna 201
+         novoLogin.id = idAutoIncrement++;
+         listaLogin.push(novoLogin);
+         return res.status(201).json(novoLogin);
+     }
+     else{
+         //senao retorna 400
+         return res.status(400).json({
+             Erro: "Nome e/ ou senha sao obrigatorios"
+ 
+         });
+     }
 
-        });
-    }
-})
+}
 
-app.put("/api/login/:id", (req, res) => {
+exports.atualizar = (req, res) => {
+
     const id = req.params.id;
     
 
@@ -67,13 +69,16 @@ app.put("/api/login/:id", (req, res) => {
     if(loginEncontrado){
         loginEncontrado.login = loginAlterar.login;
         loginEncontrado.senha = loginAlterar.senha;
+        return res.json(loginEncontrado);
     }
     else {
         return res.status(404).json({ Erro: "Login nao encontrado"});
     }
-})
 
-app.delete("/api/login/:id", (req, res) => {
+}
+
+exports.delete = (req, res) => {
+
     const id = req.params.id;
     res.send(`Deletando o Login ${id}`);
 
@@ -91,4 +96,5 @@ app.delete("/api/login/:id", (req, res) => {
         return res.status(404).json({ Erro: "Login não encontrado"});
     }
 
-})
+}
+
