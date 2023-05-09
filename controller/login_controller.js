@@ -1,3 +1,5 @@
+const Login = require("../model/login");
+
 let listaLogin = [
     {id: 1, login: "admin", senha: "admin"},
     {id: 2, login: "predio", senha: "predio"},
@@ -6,94 +8,113 @@ let listaLogin = [
 
 let idAutoIncrement = 4;
 
-exports.listar = (req, res) => {
-    res.json(listaLogin);
+exports.listar = async (req, res) => {
+
+    try{
+        const login = await Login.find();
+        res.json(login);
+    }
+    catch(err){
+        res.status(500).json({Erro:err});
+    }
 }
 
-exports.buscarPorId = (req, res) => {
+exports.buscarPorId = async (req, res) => {
+
 
     const id = req.params.id;
 
-    const loginEncontrado = listaLogin.find((login) => {
-        return (login.id == id);
-    })
+    try{
 
-    if(loginEncontrado){
-        return res.json(loginEncontrado);
-    }
-    else {
-        return res.status(404).json({ Erro: "Login nao encontrado"});
+        const loginEncontrado = await Login.findById(id);
+        if(loginEncontrado){
+            return res.json(loginEncontrado);
+        }
+        else{
+            return res.status(404).json({ Erro: "Login nao encontrado"});
+
+        }
+
+    } catch(err){
+        res.status(500).json({Erro:err});
     }
 
 }
 
-exports.inserir = (req, res) => {
+exports.inserir = async (req, res) => {
 
-     //receber o login
-     const novoLogin = req.body;
-     //validar os dados
- 
-     if(novoLogin && novoLogin.login && novoLogin.senha){
-         //se OK, cadastro os logins e retorna 201
-         novoLogin.id = idAutoIncrement++;
-         listaLogin.push(novoLogin);
-         return res.status(201).json(novoLogin);
-     }
-     else{
-         //senao retorna 400
-         return res.status(400).json({
-             Erro: "Nome e/ ou senha sao obrigatorios"
- 
-         });
-     }
+      //Receber o cliente
+    const loginRequest = req.body;
+    //Validar os dados
+
+    if(loginRequest && loginRequest.login && loginRequest.senha){
+        //Se Ok, cadastra o cliente e retorno 201
+
+        const loginNovo = new Login(loginRequest);
+
+        try{
+            const loginSalvo = await loginNovo.save();
+            return res.status(201).json(loginSalvo);
+        }
+        catch(err){
+            res.status(500).json({Erro:err});
+        }
+    }
+    else{
+        //senao retorna 400
+        return res.status(400).json({
+            Erro: "Login e/ ou senha sao obrigatorio"
+
+        });
+
+    }
 
 }
 
-exports.atualizar = (req, res) => {
+exports.atualizar = async (req, res) => {
+
+   
 
     const id = req.params.id;
-    
 
     const loginAlterar = req.body;
 
     if(!loginAlterar || !loginAlterar.login || !loginAlterar.senha){
         return res.status(400).json({
-            Erro: "Nome e/ou senha sao obrigatorios"
+            Erro: "Login e/ou senha sao obrigatorios"
         });
     }
 
-    const loginEncontrado = listaLogin.find((login) => {
-        return (login.id == id);
-    })
+    try{
+        const loginAtualizar = await Login.findByIdAndUpdate(id, loginAlterar, {new:true});
 
-    if(loginEncontrado){
-        loginEncontrado.login = loginAlterar.login;
-        loginEncontrado.senha = loginAlterar.senha;
-        return res.json(loginEncontrado);
-    }
-    else {
-        return res.status(404).json({ Erro: "Login nao encontrado"});
-    }
+        if(loginAtualizar){
+            return res.json(loginAtualizar);
+        }
+        else {
+            return res.status(404).json({ Erro: "Login nao encontrado"});
+        }
+        }catch(err) {
+            res.status(500).json({Erro: err});
+        }
 
 }
 
-exports.delete = (req, res) => {
+exports.delete = async (req, res) => {
 
     const id = req.params.id;
-    res.send(`Deletando o Login ${id}`);
 
-    const indiceLogin = listaLogin.findIndex(
-        (login) => {
-            return (login.id == id);
+    try{
+        const loginDeletado = await Login.findByIdAndDelete(id);
+        if(loginDeletado){
+            return res.json(loginDeletado);
         }
-    )
+        else{
+            return res.status(404).json({ Erro: "Login nao encontrado"});
+        }
+    } catch(err){
+        res.status(500).json({Erro: err});
 
-    if(indiceLogin >= 0){
-        const loginDeletado = listaLogin.splice(indiceLogin, 1)[0];
-        return res.json(loginDeletado);
-    }
-    else {
-        return res.status(404).json({ Erro: "Login não encontrado"});
     }
 
 }
